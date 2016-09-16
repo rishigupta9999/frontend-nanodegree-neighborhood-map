@@ -34,6 +34,15 @@
     var placeIds = [ "ChIJR6lwAHxskFQRTka_PHbS9TQ", "ChIJ3bYQeY53CEER9LMe4keT1yM", "ChIJe7q4I49skFQRB0reqf3Sl9U", "ChIJLVCIgn1skFQR0MkHaxQGR6Y", "ChIJ8eP5VY9skFQRj_eSuT7hnhM" ];
     var map;
 
+    function BusinessEntry(name) {
+      var self = this;
+      self.name = name;
+    }
+
+    function MapsViewModel() {
+
+    }
+
     function initMap() {
 
       var bellevue = new google.maps.LatLng(47.6135016, -122.2003407);
@@ -51,8 +60,8 @@
       {
         var request = { placeId: placeIds[i] };
 
-        service.getDetails(request, function(results, status) {
-          console.log("bar");
+        service.getDetails(request, function(result, status) {
+          console.log(result.name);
         });
       }
 
