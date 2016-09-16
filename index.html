@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="js/knockout-3.4.0.js"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css">
 
     <title>Neighborhood Map</title>
@@ -24,7 +25,9 @@
   <body class="container" style="width: 100%">
     <div class="row" style="height: 100%">
       <div class="col-md-2">
-        
+        <ul class="list-group" data-bind="foreach: entries">
+          <li class="list-group-item" data-bind="text: name"></li>
+        </ul>
       </div>
       <div class="col-md-10" id="map"></div>
     </div>
@@ -35,6 +38,7 @@
 
     var numPlaces = placeIds.length;
     var businessData = new Array;
+    var markers = new Array;
 
     var map;
 
@@ -44,13 +48,22 @@
     }
 
     function MapsViewModel() {
+      var self = this;
 
+      self.entries = ko.observableArray([]);
     }
+
+    var mapsViewModel = new MapsViewModel();
+    ko.applyBindings(mapsViewModel)
 
     function detailsCallback(index) {
       return function(results, status) {
         var newObject = $.extend(true, { }, results);
         businessData[index] = newObject;
+        markers[index] = new google.maps.Marker({ map: map,
+                                                  position: newObject.geometry.location });
+
+        mapsViewModel.entries.push(new BusinessEntry(newObject.name))
       }
     }
 
