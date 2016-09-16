@@ -32,6 +32,10 @@
 
   <script>
     var placeIds = [ "ChIJR6lwAHxskFQRTka_PHbS9TQ", "ChIJ3bYQeY53CEER9LMe4keT1yM", "ChIJe7q4I49skFQRB0reqf3Sl9U", "ChIJLVCIgn1skFQR0MkHaxQGR6Y", "ChIJ8eP5VY9skFQRj_eSuT7hnhM" ];
+
+    var numPlaces = placeIds.length;
+    var businessData = new Array;
+
     var map;
 
     function BusinessEntry(name) {
@@ -41,6 +45,13 @@
 
     function MapsViewModel() {
 
+    }
+
+    function detailsCallback(index) {
+      return function(results, status) {
+        var newObject = $.extend(true, { }, results);
+        businessData[index] = newObject;
+      }
     }
 
     function initMap() {
@@ -54,16 +65,12 @@
 
       service = new google.maps.places.PlacesService(map);
 
-      var numPlaces = placeIds.length;
-
-      for (var i = 0; i < numPlaces; i++)
-      {
+      for (var i = 0; i < numPlaces; i++) {
         var request = { placeId: placeIds[i] };
-
-        service.getDetails(request, function(result, status) {
-          console.log(result.name);
-        });
+        service.getDetails(request, detailsCallback(i));
       }
+
+
 
     }
 
