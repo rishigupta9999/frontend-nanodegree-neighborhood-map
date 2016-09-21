@@ -8,6 +8,10 @@
     <script src="node_modules/oauth-signature/dist/oauth-signature.js"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css">
 
+    <script type="text/javascript" src="js/OAuth.js"></script>
+    <script type="text/javascript" src="js/SHA1.js"></script>
+
+
     <title>Neighborhood Map</title>
 
   </head>
@@ -116,48 +120,71 @@
         return (Math.floor(Math.random() * 1e12).toString());
       }
 
+      function cb(data) {        
+        console.log("cb: " + JSON.stringify(data));
+      }
+
       function callYelp()
       {
-        var request = { location: "Seattle, WA",
-                        oauth_consumer_key: "-pWwtJNSnVLOO9Pdg_cMIg",
-                        oauth_token: "BFicTaElfzTEcUwrgS74jCruU_KDYpmH",
-                        oauth_nonce: generateNonce(),
-                        oauth_timestamp: Math.floor(Date.now()/1000),
-                        oauth_signature_method: "HMAC-SHA1",
-                        term: "restaurants",
-                      };
-
-        var signature = oauthSignature.generate('GET', 'https://api.yelp.com/v2/search');
-
-        request.oauth_signature = signature;
-
-        /*$.get('https://api.yelp.com/v2/search', request).done(function(data){
-          console.log(data);
-        });*/
-
-        //console.log(signature);
-
-        var settings = {
-          url: 'https://api.yelp.com/v2/search',
-          data: request,
-          cache: true,  //        <----  This is crucial to include as well to prevent jQuery from 
-          // adding on a cache-buster parameter "_=23489489749837", 
-          // invalidating our oauth-signature
-          dataType: 'jsonp',
-          success: function(results) {
-          // Do stuff with results
-          console.log(results);
-          },
-          fail: function() {
-            // Do stuff on fail
-            console.log('AJAX request has failed :(');
-          },
+        var auth = {
+            //
+            // Update with your auth tokens.
+            //
+            consumerKey : "-pWwtJNSnVLOO9Pdg_cMIg",
+            consumerSecret : "yraE9tmTtbEmqpK-JZWr0LNzVAM",
+            accessToken : "BFicTaElfzTEcUwrgS74jCruU_KDYpmH",
+            // This example is a proof of concept, for how to use the Yelp v2 API with javascript.
+            // You wouldn't actually want to expose your access token secret like this in a real application.
+            accessTokenSecret : "",
+            serviceProvider : {
+                signatureMethod : "HMAC-SHA1"
+            }
         };
-       
+        
+        var terms = 'food';
+        var near = 'San+Francisco';
 
-          // Send AJAX request via jQuery library
-          var test = $.ajax(settings);
-          console.log(test);
+        var accessor = {
+            consumerSecret : auth.consumerSecret,
+            tokenSecret : auth.accessTokenSecret
+        };
+
+        var parameters = [];
+        parameters.push(['term', terms]);
+        parameters.push(['location', near]);
+        parameters.push(['callback', 'cb']);
+        parameters.push(['oauth_consumer_key', auth.consumerKey]);
+        parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+        parameters.push(['oauth_token', auth.accessToken]);
+        parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+        
+        var message = {
+            'action' : 'https://api.yelp.com/v2/search',
+            'method' : 'GET',
+            'parameters' : parameters
+        };
+        
+        OAuth.setTimestampAndNonce(message);
+        OAuth.SignatureMethod.sign(message, accessor);
+
+        var parameterMap = OAuth.getParameterMap(message.parameters);
+            
+        $.ajax({
+            'url' : message.action,
+            'data' : parameterMap,
+            'dataType' : 'jsonp',
+            'jsonpCallback' : 'cb',
+            'cache': true
+        })
+        .done(function(data, textStatus, jqXHR) {
+                console.log('success[' + data + '], status[' + textStatus + '], jqXHR[' + JSON.stringify(jqXHR) + ']');
+            }
+        )
+        .fail(function(jqXHR, textStatus, errorThrown) {
+                            console.log('error[' + errorThrown + '], status[' + textStatus + '], jqXHR[' + JSON.stringify(jqXHR) + ']');
+                }
+        );
+
       }
 
       callYelp();
