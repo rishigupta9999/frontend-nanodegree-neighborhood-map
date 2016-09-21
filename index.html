@@ -22,14 +22,18 @@
     }
   </style>
 
-  <body class="container" style="width: 100%">
-    <div class="row" style="height: 100%">
-      <div class="col-md-2">
-        <ul class="list-group" data-bind="foreach: entries">
-          <li class="list-group-item" data-bind="text: name"></li>
-        </ul>
+  <body>
+    <div class="container" style="height: 100%">
+      <div class="row" style="height: 100%">
+        <div class="col-md-2">
+          Search <input data-bind="textInput: filterText"/><p/>
+
+          <ul class="list-group" data-bind="foreach: entries">
+            <li class="list-group-item" data-bind="text: name"></li>
+          </ul>
+        </div>
+        <div class="col-md-10" id="map" style="height: 100%"></div>
       </div>
-      <div class="col-md-10" id="map"></div>
     </div>
   </body>
 
@@ -51,6 +55,10 @@
       var self = this;
 
       self.entries = ko.observableArray([]);
+      self.filterText = ko.observable();
+      self.filterText.subscribe(function() {
+        console.log(self.filterText());
+      });
     }
 
     var mapsViewModel = new MapsViewModel();
