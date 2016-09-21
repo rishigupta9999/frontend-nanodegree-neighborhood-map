@@ -29,7 +29,7 @@
           Search <input data-bind="textInput: filterText"/><p/>
 
           <ul class="list-group" data-bind="foreach: entries">
-            <li class="list-group-item" data-bind="text: name"></li>
+            <li class="list-group-item" data-bind="text: name, display: visible"></li>
           </ul>
         </div>
         <div class="col-md-10" id="map" style="height: 100%"></div>
@@ -49,16 +49,28 @@
     function BusinessEntry(name) {
       var self = this;
       self.name = name;
+      self.visible = ko.observable(true);
     }
 
     function MapsViewModel() {
       var self = this;
 
       self.entries = ko.observableArray([]);
+
       self.filterText = ko.observable();
       self.filterText.subscribe(function() {
-        console.log(self.filterText());
+
+        filterVal = self.filterText().toUpperCase();
+
+        for (var i = 0; i < self.entries().length; i++)
+        {
+          var searchPos = self.entries()[i].name.toUpperCase().search(filterVal);
+          console.log(searchPos)
+          //self.entries[i].visible();
+        }
+
       });
+
     }
 
     var mapsViewModel = new MapsViewModel();
