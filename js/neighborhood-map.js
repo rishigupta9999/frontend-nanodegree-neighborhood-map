@@ -3,6 +3,7 @@ var businessData = new Array;
 var markers = new Array;
 
 var map;
+var infoWindow;
 
 var placeIds = [ "ChIJR6lwAHxskFQRTka_PHbS9TQ", "ChIJ3bYQeY53CEER9LMe4keT1yM", "ChIJe7q4I49skFQRB0reqf3Sl9U", "ChIJLVCIgn1skFQR0MkHaxQGR6Y", "ChIJ8eP5VY9skFQRj_eSuT7hnhM" ];
 var yelpIds = [ "lot-no-3-bellevue", "tavern-hall-bellevue-2", "earls-kitchen-bar-bellevue", "chantanee-thai-restaurant-and-bar-bellevue-2", "cactus-restaurants-bellevue"];
@@ -40,15 +41,24 @@ function MapsViewModel() {
       if (status == "success")
       {
         contentString = "<div class=\"container\" style=\"max-width: 400px\">"
-        contentString += "<div class=\"row\"><div class=\"col-md-12\"><span style=\"font-size: 2em\">" + data.name + "</span></div></div>"
-        contentString += "<div class=\"row\"><div class=\"col-md-4\"><img src=\"" + data.image_url + "\"></img></div></div>"
+        contentString += "<div class=\"row\"><div class=\"col-md-12\"><a href=\"" + data.url + "\"><span style=\"font-size: 2em\">" + data.name + "</span></a></div></div>"
+        contentString += "<div class=\"row\"><div class=\"col-md-4\"><img src=\"" + data.image_url + "\"></img></div>"
+        contentString += "<div class=\"col-md-8\">";
+        contentString += "<div><img src=\"" + data.rating_img_url + "\" style=\"padding-right: 10px\">Reviews: " + data.review_count + "</div>";
+        contentString += "<div>" + data.snippet_text + "</div>";
+        contentString += "</div>";
         contentString += "</div>"
 
-        var infowindow = new google.maps.InfoWindow({
+        if (infoWindow != null)
+        {
+          infoWindow.close();
+        }
+
+        infoWindow = new google.maps.InfoWindow({
           content: contentString
         });
 
-        infowindow.open(map, markers[clickedItem.index]);
+        infoWindow.open(map, markers[clickedItem.index]);
 
       }
     });
