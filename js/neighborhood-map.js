@@ -9,10 +9,11 @@ var yelpIds = [ "lot-no-3-bellevue", "tavern-hall-bellevue-2", "earls-kitchen-ba
 var numPlaces = placeIds.length;
 
 // Knockout bindings
-function BusinessEntry(name) {
+function BusinessEntry(name, index) {
   var self = this;
   self.name = name;
   self.visible = ko.observable(true);
+  self.index = index;
 }
 
 function MapsViewModel() {
@@ -33,8 +34,14 @@ function MapsViewModel() {
 
   });
 
-  self.listItemClick = function() {
-    console.log("listItemClick");
+  self.listItemClick = function(clickedItem) {
+
+    var infowindow = new google.maps.InfoWindow({
+      content: "blahblahblah"
+    });
+
+    infowindow.open(map, markers[clickedItem.index]);
+
   }
 
 }
@@ -50,7 +57,7 @@ function detailsCallback(index) {
     markers[index] = new google.maps.Marker({ map: map,
                                               position: newObject.geometry.location });
 
-    mapsViewModel.entries.push(new BusinessEntry(newObject.name))
+    mapsViewModel.entries.push(new BusinessEntry(newObject.name, index))
   }
 }
 
