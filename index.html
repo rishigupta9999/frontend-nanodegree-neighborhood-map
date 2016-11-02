@@ -34,7 +34,7 @@
           Search <input data-bind="textInput: filterText"/><p/>
 
           <ul class="list-group" data-bind="foreach: entries">
-            <li class="list-group-item" data-bind="text: name, visible: visible, click: $parent.listItemClick"></li>
+            <a href="javascript:void(0)" class="list-group-item" data-bind="text: name, visible: visible, click: $parent.listItemClick"></a>
           </ul>
         </div>
         <div class="col-md-10" id="map" style="height: 100%; padding: 0px"></div>

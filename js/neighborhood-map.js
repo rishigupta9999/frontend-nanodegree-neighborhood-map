@@ -8,6 +8,7 @@ var infoWindow;
 var placeIds = [ "ChIJR6lwAHxskFQRTka_PHbS9TQ", "ChIJ3bYQeY53CEER9LMe4keT1yM", "ChIJe7q4I49skFQRB0reqf3Sl9U", "ChIJLVCIgn1skFQR0MkHaxQGR6Y", "ChIJ8eP5VY9skFQRj_eSuT7hnhM" ];
 var yelpIds = [ "lot-no-3-bellevue", "tavern-hall-bellevue-2", "earls-kitchen-bar-bellevue", "chantanee-thai-restaurant-and-bar-bellevue-2", "cactus-restaurants-bellevue"];
 var numPlaces = placeIds.length;
+var curSelection = -1;
 
 // Knockout bindings
 function BusinessEntry(name, index) {
@@ -19,6 +20,17 @@ function BusinessEntry(name, index) {
 
 function callYelpWrapper(index)
 {
+    var selector = ".list-group .list-group-item:nth-child(" + (index + 1) + ")";
+    $(selector).addClass("active");
+
+    if (curSelection != -1)
+    {
+      selector = ".list-group .list-group-item:nth-child(" + (curSelection + 1) + ")";
+      $(selector).removeClass("active");
+    }
+
+    curSelection = index;
+
     callYelp(index, function(data, status, obj) {
       if (status == "success")
       {
