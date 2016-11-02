@@ -17,27 +17,9 @@ function BusinessEntry(name, index) {
   self.index = index;
 }
 
-function MapsViewModel() {
-  var self = this;
-
-  self.entries = ko.observableArray([]);
-
-  self.filterText = ko.observable();
-  self.filterText.subscribe(function() {
-
-    filterVal = self.filterText().toUpperCase();
-
-    for (var i = 0; i < self.entries().length; i++)
-    {
-      var searchPos = self.entries()[i].name.toUpperCase().search(filterVal);
-      self.entries()[i].visible(searchPos != -1);
-    }
-
-  });
-
-  self.listItemClick = function(clickedItem) {
-
-    callYelp(clickedItem.index, function(data, status, obj) {
+function callYelpWrapper(index)
+{
+    callYelp(index, function(data, status, obj) {
       if (status == "success")
       {
         contentString = "<div class=\"container\" style=\"max-width: 400px\">"
@@ -58,12 +40,32 @@ function MapsViewModel() {
           content: contentString
         });
 
-        infoWindow.open(map, markers[clickedItem.index]);
+        infoWindow.open(map, markers[index]);
 
       }
     });
+}
 
+function MapsViewModel() {
+  var self = this;
 
+  self.entries = ko.observableArray([]);
+
+  self.filterText = ko.observable();
+  self.filterText.subscribe(function() {
+
+    filterVal = self.filterText().toUpperCase();
+
+    for (var i = 0; i < self.entries().length; i++)
+    {
+      var searchPos = self.entries()[i].name.toUpperCase().search(filterVal);
+      self.entries()[i].visible(searchPos != -1);
+    }
+
+  });
+
+  self.listItemClick = function(clickedItem) {
+    callYelpWrapper(clickedItem.index);
   }
 
 }
@@ -131,6 +133,11 @@ function callYelp(index, callback)
 var mapsViewModel = new MapsViewModel();
 ko.applyBindings(mapsViewModel);
 
+function listenerCallback(index) {
+  return function() {
+    callYelpWrapper(index);
+  }
+}
 
 function detailsCallback(index) {
   return function(results, status) {
@@ -139,7 +146,9 @@ function detailsCallback(index) {
     markers[index] = new google.maps.Marker({ map: map,
                                               position: newObject.geometry.location });
 
-    mapsViewModel.entries.push(new BusinessEntry(newObject.name, index))
+    mapsViewModel.entries.push(new BusinessEntry(newObject.name, index));
+
+    markers[index].addListener('click', listenerCallback(index));
   }
 }
 
