@@ -198,7 +198,12 @@ function initMap() {
   function cb(data) {        
     //console.log("cb: " + JSON.stringify(data));
   }
-} 
+}
+
+$.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyB0HNcrSFVlgw9gqoS00QNSvnuWLNmVEXI&callback=initMap&libraries=places").fail(function() {
+  $(".error-window").fadeIn();
+  $(".error-window").text("Could not connect to Google Maps");
+});
 
 $(document).ready(function() {
 

@@ -6,7 +6,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="js/knockout-3.4.0.js"></script>
     <script src="node_modules/oauth-signature/dist/oauth-signature.js"></script>
+
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/neighborhood-map.css">
 
     <script type="text/javascript" src="js/OAuth.js"></script>
     <script type="text/javascript" src="js/SHA1.js"></script>
@@ -29,6 +31,8 @@
 
   <body>
     <div class="container" style="height: 100%">
+      <div class="row error-window">
+      </div>
       <div class="row" style="height: 100%">
         <div class="col-md-2">
           Search <input data-bind="textInput: filterText"/><p/>
@@ -43,8 +47,5 @@
   </body>
 
   <script type="text/javascript" src="js/neighborhood-map.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0HNcrSFVlgw9gqoS00QNSvnuWLNmVEXI&callback=initMap&libraries=places"
-    async defer></script>
-
 
 </html>
