@@ -61,7 +61,11 @@ function listItemClicked(index, position)
 
         infoWindow.open(map, markers[index]);
         infoWindow.addListener('closeclick', function() {
-          console.log("blar");
+
+          selector = "#list-item-" + curSelection;
+          $(selector).removeClass("active");
+          curSelection = -1;
+          
         })
       }
     });
