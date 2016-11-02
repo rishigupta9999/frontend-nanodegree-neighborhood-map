@@ -146,7 +146,8 @@ function callYelp(index, callback)
     callback(data, textStatus, jqXHR);
   })
   .fail(function(jqXHR, textStatus, errorThrown) {
-    callback(errorThrown, textStatus, jqXHR);
+    $(".error-window").fadeIn();
+    $(".error-window").text("Could not connect to the Yelp API");
   });
 
 }
