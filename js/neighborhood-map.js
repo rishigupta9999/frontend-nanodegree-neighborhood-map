@@ -29,6 +29,12 @@ function callYelpWrapper(index)
       $(selector).removeClass("active");
     }
 
+    markers[index].setAnimation(google.maps.Animation.BOUNCE);
+    
+    setTimeout(function() {
+      markers[index].setAnimation(null);
+    }, 2000);
+
     curSelection = index;
 
     callYelp(index, function(data, status, obj) {
