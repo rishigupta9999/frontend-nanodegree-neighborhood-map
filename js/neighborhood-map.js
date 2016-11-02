@@ -11,31 +11,32 @@ var numPlaces = placeIds.length;
 var curSelection = -1;
 
 // Knockout bindings
-function BusinessEntry(name, index) {
+function BusinessEntry(name, index, position) {
   var self = this;
   self.name = name;
   self.visible = ko.observable(true);
   self.index = index;
+  self.position = position;
 }
 
-function callYelpWrapper(index)
+function listItemClicked(index, position)
 {
-    var selector = ".list-group .list-group-item:nth-child(" + (index + 1) + ")";
+    var selector = "#list-item-" + position;
     $(selector).addClass("active");
 
     if (curSelection != -1)
     {
-      selector = ".list-group .list-group-item:nth-child(" + (curSelection + 1) + ")";
+      selector = "#list-item-" + curSelection;
       $(selector).removeClass("active");
     }
 
-    markers[index].setAnimation(google.maps.Animation.BOUNCE);
+    markers[position].setAnimation(google.maps.Animation.BOUNCE);
     
     setTimeout(function() {
-      markers[index].setAnimation(null);
+      markers[position].setAnimation(null);
     }, 2000);
 
-    curSelection = index;
+    curSelection = position;
 
     callYelp(index, function(data, status, obj) {
       if (status == "success")
@@ -59,7 +60,9 @@ function callYelpWrapper(index)
         });
 
         infoWindow.open(map, markers[index]);
-
+        infoWindow.addListener('closeclick', function() {
+          console.log("blar");
+        })
       }
     });
 }
@@ -83,7 +86,7 @@ function MapsViewModel() {
   });
 
   self.listItemClick = function(clickedItem) {
-    callYelpWrapper(clickedItem.index);
+    listItemClicked(clickedItem.index, clickedItem.position);
   }
 
 }
@@ -151,12 +154,16 @@ function callYelp(index, callback)
 var mapsViewModel = new MapsViewModel();
 ko.applyBindings(mapsViewModel);
 
-function listenerCallback(index) {
+
+// Called when a marker is clicked.  This calls through to the click handler
+function listenerCallback(index, position) {
   return function() {
-    callYelpWrapper(index);
+    listItemClicked(index, position);
   }
 }
 
+// Called once the Places Service returns.  This is needed to populate the names of the businesses
+// and the marker positions.
 function detailsCallback(index) {
   return function(results, status) {
     var newObject = $.extend(true, { }, results);
@@ -164,12 +171,14 @@ function detailsCallback(index) {
     markers[index] = new google.maps.Marker({ map: map,
                                               position: newObject.geometry.location });
 
-    mapsViewModel.entries.push(new BusinessEntry(newObject.name, index));
+    position = mapsViewModel.entries().length;
+    mapsViewModel.entries.push(new BusinessEntry(newObject.name, index, position));
 
-    markers[index].addListener('click', listenerCallback(index));
+    markers[index].addListener('click', listenerCallback(index, position));
   }
 }
 
+// This function kicks off the entire application.  Nothing much can happen without the map.
 function initMap() {
 
   var bellevue = new google.maps.LatLng(47.6135016, -122.2003407);
@@ -186,24 +195,9 @@ function initMap() {
     service.getDetails(request, detailsCallback(i));
   }
 
-  var randomString = function(length) {
-      var text = "";
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      for(var i = 0; i < length; i++) {
-          text += possible.charAt(Math.floor(Math.random() * possible.length));
-      }
-      return text;
-  }
-
-  function generateNonce() {
-    return (Math.floor(Math.random() * 1e12).toString());
-  }
-
   function cb(data) {        
     //console.log("cb: " + JSON.stringify(data));
   }
-
-  //callYelp();
 } 
 
 $(document).ready(function() {
