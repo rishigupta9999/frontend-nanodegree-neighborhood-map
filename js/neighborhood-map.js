@@ -30,11 +30,12 @@ function listItemClicked(index, position)
       $(selector).removeClass("active");
     }
 
+    map.panTo(markers[index].getPosition());
     markers[index].setAnimation(google.maps.Animation.BOUNCE);
     
     setTimeout(function() {
       markers[index].setAnimation(null);
-    }, 2000);
+    }, 1400);
 
     curSelection = position;
 
@@ -42,7 +43,7 @@ function listItemClicked(index, position)
       if (status == "success")
       {
         contentString = "<div class=\"container\" style=\"max-width: 400px\">";
-        contentString += "<div class=\"row\"><div class=\"col-md-12\"><a href=\"" + data.url + "\"><span style=\"font-size: 2em\">" + data.name + "</span></a></div></div>";
+        contentString += "<div class=\"row\"><div class=\"col-md-12\"><a href=\"" + data.url + "\"" + "target=\"_blank\"><span style=\"font-size: 2em\">" + data.name + "</span></a></div></div>";
         contentString += "<div class=\"row\"><div class=\"col-md-4\"><img src=\"" + data.image_url + "\"></img></div>";
         contentString += "<div class=\"col-md-8\">";
         contentString += "<div><img src=\"" + data.rating_img_url + "\" style=\"padding-right: 10px\">Reviews: " + data.review_count + "</div>";
