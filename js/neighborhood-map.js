@@ -65,7 +65,7 @@ function listItemClicked(index, position)
           selector = "#list-item-" + curSelection;
           $(selector).removeClass("active");
           curSelection = -1;
-          
+
         })
       }
     });
@@ -85,6 +85,9 @@ function MapsViewModel() {
     {
       var searchPos = self.entries()[i].name.toUpperCase().search(filterVal);
       self.entries()[i].visible(searchPos != -1);
+
+      hideIndex = self.entries()[i].index;
+      markers[hideIndex].setVisible(searchPos != -1);
     }
 
   });
