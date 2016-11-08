@@ -1,6 +1,6 @@
 
-var businessData = new Array;
-var markers = new Array;
+var businessData = new Array();
+var markers = new Array();
 
 var map;
 var infoWindow;
@@ -21,6 +21,8 @@ function BusinessEntry(name, index, position) {
 
 function listItemClicked(index, position)
 {
+    console.log(index + ", " + position);
+
     var selector = "#list-item-" + position;
     $(selector).addClass("active");
 
@@ -30,10 +32,10 @@ function listItemClicked(index, position)
       $(selector).removeClass("active");
     }
 
-    markers[position].setAnimation(google.maps.Animation.BOUNCE);
+    markers[index].setAnimation(google.maps.Animation.BOUNCE);
     
     setTimeout(function() {
-      markers[position].setAnimation(null);
+      markers[index].setAnimation(null);
     }, 2000);
 
     curSelection = position;
@@ -41,16 +43,16 @@ function listItemClicked(index, position)
     callYelp(index, function(data, status, obj) {
       if (status == "success")
       {
-        contentString = "<div class=\"container\" style=\"max-width: 400px\">"
-        contentString += "<div class=\"row\"><div class=\"col-md-12\"><a href=\"" + data.url + "\"><span style=\"font-size: 2em\">" + data.name + "</span></a></div></div>"
-        contentString += "<div class=\"row\"><div class=\"col-md-4\"><img src=\"" + data.image_url + "\"></img></div>"
+        contentString = "<div class=\"container\" style=\"max-width: 400px\">";
+        contentString += "<div class=\"row\"><div class=\"col-md-12\"><a href=\"" + data.url + "\"><span style=\"font-size: 2em\">" + data.name + "</span></a></div></div>";
+        contentString += "<div class=\"row\"><div class=\"col-md-4\"><img src=\"" + data.image_url + "\"></img></div>";
         contentString += "<div class=\"col-md-8\">";
         contentString += "<div><img src=\"" + data.rating_img_url + "\" style=\"padding-right: 10px\">Reviews: " + data.review_count + "</div>";
         contentString += "<div>" + data.snippet_text + "</div>";
         contentString += "</div>";
-        contentString += "</div>"
+        contentString += "</div>";
 
-        if (infoWindow != null)
+        if (infoWindow !== null)
         {
           infoWindow.close();
         }
@@ -66,7 +68,7 @@ function listItemClicked(index, position)
           $(selector).removeClass("active");
           curSelection = -1;
 
-        })
+        });
       }
     });
 }
@@ -170,19 +172,34 @@ function listenerCallback(index, position) {
   }
 }
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 // Called once the Places Service returns.  This is needed to populate the names of the businesses
 // and the marker positions.
 function detailsCallback(index) {
   return function(results, status) {
-    var newObject = $.extend(true, { }, results);
-    businessData[index] = newObject;
-    markers[index] = new google.maps.Marker({ map: map,
-                                              position: newObject.geometry.location });
 
-    position = mapsViewModel.entries().length;
-    mapsViewModel.entries.push(new BusinessEntry(newObject.name, index, position));
+    if (status == 'OK')
+    {
+      var newObject = $.extend(true, { }, results);
+      businessData[index] = newObject;
+      markers[index] = new google.maps.Marker({ map: map,
+                                                position: newObject.geometry.location });
 
-    markers[index].addListener('click', listenerCallback(index, position));
+      position = mapsViewModel.entries().length;
+      mapsViewModel.entries.push(new BusinessEntry(newObject.name, index, position));
+
+      markers[index].addListener('click', listenerCallback(index, position));
+    }
+    else
+    {
+      $(".error-window").fadeIn();
+      $(".error-window").text("Got an error from Google Places.  Some data may be incomplete.");
+    }
   }
 }
 
