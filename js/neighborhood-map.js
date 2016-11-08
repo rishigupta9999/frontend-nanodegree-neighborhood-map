@@ -1,6 +1,6 @@
 
-var businessData = new Array();
-var markers = new Array();
+var businessData = [];
+var markers = [];
 
 var map;
 var infoWindow;
@@ -21,8 +21,6 @@ function BusinessEntry(name, index, position) {
 
 function listItemClicked(index, position)
 {
-    console.log(index + ", " + position);
-
     var selector = "#list-item-" + position;
     $(selector).addClass("active");
 
@@ -52,7 +50,7 @@ function listItemClicked(index, position)
         contentString += "</div>";
         contentString += "</div>";
 
-        if (infoWindow !== null)
+        if (infoWindow != null)
         {
           infoWindow.close();
         }
@@ -96,7 +94,7 @@ function MapsViewModel() {
 
   self.listItemClick = function(clickedItem) {
     listItemClicked(clickedItem.index, clickedItem.position);
-  }
+  };
 
 }
 
@@ -169,7 +167,7 @@ ko.applyBindings(mapsViewModel);
 function listenerCallback(index, position) {
   return function() {
     listItemClicked(index, position);
-  }
+  };
 }
 
 function getRandomInt(min, max) {
@@ -200,7 +198,7 @@ function detailsCallback(index) {
       $(".error-window").fadeIn();
       $(".error-window").text("Got an error from Google Places.  Some data may be incomplete.");
     }
-  }
+  };
 }
 
 // This function kicks off the entire application.  Nothing much can happen without the map.
